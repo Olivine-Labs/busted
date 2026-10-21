@@ -40,6 +40,10 @@ end
 
 return function()
   local mediator = require 'mediator'()
+  -- luaL_traceback's per-frame global name scan (pushglobalfuncname) only
+  -- exists on Lua 5.2+; fasttrace reproduces its exact output for the frames
+  -- trimTrace keeps, without paying that scan for frames busted discards.
+  local fasttrace = _VERSION >= 'Lua 5.2' and require 'busted.fasttrace' or nil
   local path = require 'pl.path'
   local pretty = require 'pl.pretty'
   local system = require 'system'
@@ -78,7 +82,7 @@ return function()
       info = debug.getinfo(level, 'Sl')
     end
 
-    info.traceback = debug.traceback('', level)
+    info.traceback = fasttrace and fasttrace.trimmed(level, false) or debug.traceback('', level)
     info.message = tostring(msg)
 
     local file = busted.getFile(element)
