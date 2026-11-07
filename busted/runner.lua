@@ -83,6 +83,28 @@ return function(options)
   -- Add additional package paths based on lpath and cpath cliArgs
   if #cliArgs.lpath > 0 then
     package.path = (cliArgs.lpath .. ';' .. package.path):gsub(';;',';')
+    local moonpath = rawget(package, 'moonpath')
+    if type(moonpath) == 'string' then
+      local moonpaths, seen = {}, {}
+      local function add_path(value)
+        if not seen[value] then
+          moonpaths[#moonpaths + 1] = value
+          seen[value] = true
+        end
+      end
+      -- Use MoonScript's suffix conversion only for the extra Lua templates.
+      -- Explicit prefixes take priority; append remaining custom paths in order.
+      for value in cliArgs.lpath:gmatch('[^;]+') do
+        local prefix = value:match('^(.-)%.lua$')
+        if prefix then add_path(prefix .. '.moon') end
+      end
+      if #moonpaths > 0 then
+        for value in moonpath:gmatch('[^;]+') do
+          if not seen[value] then moonpaths[#moonpaths + 1] = value end
+        end
+        rawset(package, 'moonpath', table.concat(moonpaths, ';'))
+      end
+    end
   end
 
   if #cliArgs.cpath > 0 then
