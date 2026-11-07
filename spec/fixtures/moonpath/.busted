@@ -1,0 +1,5 @@
+return {
+  default = {
+    lpath = 'spec/fixtures/moonpath/first/?.lua;spec/fixtures/moonpath/first/?/init.lua;spec/fixtures/moonpath/second/?.lua;spec/fixtures/moonpath/first/?.lua',
+  },
+}
