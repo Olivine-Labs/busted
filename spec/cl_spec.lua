@@ -588,6 +588,13 @@ describe_moon('Tests moonscript error messages through the command line', functi
     local expected = 'spec/cl_moonscript_error_messages.moon:13: Nil error'
     assert.is_equal(normpath(expected), errmsg)
   end)
+
+  it('when a top level test is not in the first test file', function()
+    local _, _, result = executeBusted('--output=plainTerminal spec/cl_success.lua spec/cl_moonscript_top_level.moon')
+    local err = result:match('(Failure %-> .-)\n')
+    local expectedErr = "Failure -> spec/cl_moonscript_top_level.moon @ 3"
+    assert.is_equal(expectedErr, err)
+  end)
 end)
 
 describe('Tests pending through the commandline', function()

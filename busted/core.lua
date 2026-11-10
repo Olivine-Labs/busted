@@ -114,30 +114,21 @@ return function()
   end
 
   function busted.getFile(element)
-    local parent = busted.context.parent(element)
+    local current = element
 
-    while parent do
-      if parent.file then
-        local file = parent.file[1]
+    while current do
+      if current.descriptor == 'file' then
         return {
-          name = file.name,
-          getTrace = file.run.getTrace,
-          rewriteMessage = file.run.rewriteMessage
+          name = current.name,
+          getTrace = current.run.getTrace,
+          rewriteMessage = current.run.rewriteMessage
         }
       end
 
-      if parent.descriptor == 'file' then
-        return {
-          name = parent.name,
-          getTrace = parent.run.getTrace,
-          rewriteMessage = parent.run.rewriteMessage
-        }
-      end
-
-      parent = busted.context.parent(parent)
+      current = busted.context.parent(current)
     end
 
-    return parent
+    return current
   end
 
   function busted.fail(msg, level)
